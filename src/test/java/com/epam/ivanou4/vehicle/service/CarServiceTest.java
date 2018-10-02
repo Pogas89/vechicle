@@ -9,6 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
+import static com.epam.ivanou4.vehicle.CarTestData.CAR1;
+import static com.epam.ivanou4.vehicle.CarTestData.CAR2;
+import static com.epam.ivanou4.vehicle.CarTestData.assertMatch;
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
@@ -40,7 +45,8 @@ public class CarServiceTest {
 
     @Test
     public void getAll() {
-        service.getAll();
+        List<Car> cars = service.getAll();
+        assertMatch(cars, CAR1, CAR2);
     }
 
     @Test
