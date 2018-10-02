@@ -28,7 +28,7 @@ public class SubsidiaryRepositoryImpl implements SubsidiaryRepository {
 
     @Override
     public void delete(String id) {
-        repository.delete(id);
+        repository.deleteById(id);
     }
 
     @Override

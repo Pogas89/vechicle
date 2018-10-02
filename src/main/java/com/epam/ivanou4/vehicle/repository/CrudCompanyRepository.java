@@ -13,5 +13,5 @@ public interface CrudCompanyRepository extends MongoRepository<Company, String> 
 
     Company save(Company entity);
 
-    void delete(String id);
+    void deleteById(String id);
 }

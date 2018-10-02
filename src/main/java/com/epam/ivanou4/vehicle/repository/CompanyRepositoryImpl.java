@@ -28,6 +28,6 @@ public class CompanyRepositoryImpl implements CompanyRepository {
 
     @Override
     public void delete(String id) {
-        repository.delete(id);
+        repository.deleteById(id);
     }
 }
