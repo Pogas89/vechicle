@@ -28,11 +28,11 @@ public class SubsidiaryRepositoryImpl implements SubsidiaryRepository {
 
     @Override
     public void delete(String id) {
-        repository.delete(id);
+        repository.deleteById(id);
     }
 
     @Override
     public List<Subsidiary> getByCompanyId(String id) {
-        return repository.getAllByCompany_Id(id);
+        return repository.getByCompanyId(id);
     }
 }

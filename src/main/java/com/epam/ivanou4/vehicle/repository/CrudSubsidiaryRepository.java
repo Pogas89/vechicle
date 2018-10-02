@@ -12,7 +12,7 @@ public interface CrudSubsidiaryRepository extends MongoRepository<Subsidiary, St
 
     List<Subsidiary> findAll();
 
-    void delete(String id);
+    void deleteById(String id);
 
-    List<Subsidiary> getAllByCompany_Id(String id);
+    List<Subsidiary> getByCompanyId(String companyId);
 }
