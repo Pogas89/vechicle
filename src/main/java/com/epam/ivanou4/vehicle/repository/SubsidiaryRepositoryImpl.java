@@ -33,6 +33,6 @@ public class SubsidiaryRepositoryImpl implements SubsidiaryRepository {
 
     @Override
     public List<Subsidiary> getByCompanyId(String id) {
-        return repository.getAllByCompany_Id(id);
+        return repository.getByCompanyId(id);
     }
 }
