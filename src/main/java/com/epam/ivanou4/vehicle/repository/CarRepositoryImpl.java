@@ -19,26 +19,32 @@ public class CarRepositoryImpl implements CarRepository {
     @Override
     public Car save(Car car) {
         Car save = repository.save(car);
-        log.info("save car: " + save);
+        log.debug("repo save car: " + save);
         return save;
     }
 
     @Override
     public Car get(String id) {
         Car carById = repository.getCarById(id);
-        log.info("get car: " + carById);
+        log.debug("repo get car: " + carById);
         return carById;
     }
 
     @Override
     public List<Car> getAll() {
-        log.info("get all cars");
+        log.debug("repo get all cars");
         return repository.findAll();
     }
 
     @Override
     public void delete(String id) {
-        log.info("delete car with id: " + id);
+        log.debug("repo delete car with id: " + id);
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<Car> findByModel(String model) {
+        log.debug("repo get car by model: " + model);
+        return repository.findByModel(model);
     }
 }

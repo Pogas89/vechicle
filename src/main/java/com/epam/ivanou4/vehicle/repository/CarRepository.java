@@ -12,4 +12,6 @@ public interface CarRepository {
     List<Car> getAll();
 
     void delete(String id);
+
+    List<Car> findByModel(String model);
 }
