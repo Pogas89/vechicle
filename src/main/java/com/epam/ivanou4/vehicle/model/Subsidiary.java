@@ -1,14 +1,12 @@
 package com.epam.ivanou4.vehicle.model;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Subsidiary extends AbstractBaseEntity {
     private String companyId;
     private String location;
     private Date creationDate;
-
-    public Subsidiary() {
-    }
 
     public String getCompanyId() {
         return companyId;
@@ -40,7 +38,23 @@ public class Subsidiary extends AbstractBaseEntity {
                 "companyId='" + companyId + '\'' +
                 ", location='" + location + '\'' +
                 ", creationDate=" + creationDate +
-                ", id='" + id + '\'' +
+                ", id='" + getId() + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Subsidiary)) return false;
+        if (!super.equals(o)) return false;
+        Subsidiary that = (Subsidiary) o;
+        return Objects.equals(getCompanyId(), that.getCompanyId()) &&
+                Objects.equals(getLocation(), that.getLocation()) &&
+                Objects.equals(getCreationDate(), that.getCreationDate());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getCompanyId(), getLocation(), getCreationDate());
     }
 }

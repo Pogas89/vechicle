@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public class CompanyRepositoryImpl implements CompanyRepository {
     @Autowired
-    CrudCompanyRepository repository;
+    private CrudCompanyRepository repository;
 
     @Override
     public Company save(Company company) {

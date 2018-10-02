@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public class SubsidiaryRepositoryImpl implements SubsidiaryRepository {
     @Autowired
-    CrudSubsidiaryRepository repository;
+    private CrudSubsidiaryRepository repository;
 
     @Override
     public Subsidiary save(Subsidiary subsidiary) {
