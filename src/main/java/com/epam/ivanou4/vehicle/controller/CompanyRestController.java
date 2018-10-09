@@ -33,11 +33,11 @@ public class CompanyRestController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Company> createWithLocation(@RequestBody Company company) {
-        Company created = service.create(company);
+        Company createdCompany = service.create(company);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
-                .buildAndExpand(created.getId()).toUri();
-        return ResponseEntity.created(uriOfNewResource).body(created);
+                .buildAndExpand(createdCompany.getId()).toUri();
+        return ResponseEntity.created(uriOfNewResource).body(createdCompany);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

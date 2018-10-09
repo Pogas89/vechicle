@@ -33,11 +33,11 @@ public class SubsidiaryRestController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Subsidiary> createWithLocation(@RequestBody Subsidiary subsidiary) {
-        Subsidiary created = service.create(subsidiary);
+        Subsidiary createdSubsidiary = service.create(subsidiary);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
-                .buildAndExpand(created.getId()).toUri();
-        return ResponseEntity.created(uriOfNewResource).body(created);
+                .buildAndExpand(createdSubsidiary.getId()).toUri();
+        return ResponseEntity.created(uriOfNewResource).body(createdSubsidiary);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
