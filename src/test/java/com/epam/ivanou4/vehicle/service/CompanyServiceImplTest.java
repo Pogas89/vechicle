@@ -2,65 +2,81 @@ package com.epam.ivanou4.vehicle.service;
 
 import com.epam.ivanou4.vehicle.model.Company;
 import com.epam.ivanou4.vehicle.repository.CompanyRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
-import static com.epam.ivanou4.vehicle.CompanyTestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-class CompanyServiceImplTest {
+@RunWith(MockitoJUnitRunner.class)
+public class CompanyServiceImplTest {
+    private static final String COMPANY1_ID = "Company1TestId";
+    private static final String COMPANY2_ID = "Company2TestId";
+
     @InjectMocks
-    CompanyServiceImpl service;
+    private CompanyServiceImpl service;
 
     @Mock
     private CompanyRepository repository;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
+    private Company createCompany(String id, String name, String description, Date date) {
+        Company company = new Company();
+        company.setId(id);
+        company.setName(name);
+        company.setDescription(description);
+        company.setCreationDate(date);
+        return company;
     }
 
     @Test
-    void create() {
-        when(repository.save(any(Company.class))).thenReturn(COMPANY1);
-        Company company = service.create(COMPANY1);
-        assertThat(company).isEqualTo(COMPANY1);
+    public void create() {
+        Company company1 = createCompany(COMPANY1_ID, "testname1", "testdescription1", new Date(1000000000000L));
+        when(repository.save(any(Company.class))).thenReturn(company1);
+        Company company = service.create(company1);
+        assertThat(company).isEqualTo(company1);
+        verify(repository).save(company1);
     }
 
     @Test
-    void update() {
-        when(repository.save(any(Company.class))).thenReturn(COMPANY1);
-        service.update(COMPANY1);
-        verify(repository, times(1)).save(COMPANY1);
+    public void update() {
+        Company company1 = createCompany(COMPANY1_ID, "testname1", "testdescription1", new Date(1000000000000L));
+        when(repository.save(any(Company.class))).thenReturn(company1);
+        service.update(company1);
+        verify(repository).save(company1);
     }
 
     @Test
-    void delete() {
+    public void delete() {
         doNothing().when(repository).delete(anyString());
-        service.delete(COMPANY1_ID);
-        verify(repository, times(1)).delete(COMPANY1_ID);
+        service.delete(COMPANY2_ID);
+        verify(repository).delete(COMPANY2_ID);
     }
 
     @Test
-    void get() {
-        when(repository.get(anyString())).thenReturn(COMPANY1);
+    public void get() {
+        Company company1 = createCompany(COMPANY1_ID, "testname1", "testdescription1", new Date(1000000000000L));
+        when(repository.get(anyString())).thenReturn(company1);
         Company company = service.get(COMPANY1_ID);
-        assertThat(company).isEqualTo(COMPANY1);
+        assertThat(company).isEqualTo(company1);
+        verify(repository).get(COMPANY1_ID);
     }
 
     @Test
-    void getAll() {
-        when(repository.getAll()).thenReturn(Arrays.asList(COMPANY1, COMPANY2));
+    public void getAll() {
+        Company company1 = createCompany(COMPANY1_ID, "testname1", "testdescription1", new Date(1000000000000L));
+        Company company2 = createCompany(COMPANY2_ID, "testname2", "testdescription2", new Date(1002000000000L));
+        when(repository.getAll()).thenReturn(Arrays.asList(company1, company2));
         List<Company> companies = service.getAll();
-        assertThat(companies).isEqualTo(Arrays.asList(COMPANY1, COMPANY2));
+        assertThat(companies).isEqualTo(Arrays.asList(company1, company2));
+        verify(repository).getAll();
     }
 }

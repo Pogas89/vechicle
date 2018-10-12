@@ -2,73 +2,91 @@ package com.epam.ivanou4.vehicle.service;
 
 import com.epam.ivanou4.vehicle.model.Subsidiary;
 import com.epam.ivanou4.vehicle.repository.SubsidiaryRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
-import static com.epam.ivanou4.vehicle.CompanyTestData.COMPANY1_ID;
-import static com.epam.ivanou4.vehicle.SubsidiaryTestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class SubsidiaryServiceImplTest {
+@RunWith(MockitoJUnitRunner.class)
+public class SubsidiaryServiceImplTest {
+    private static final String SUBSIDIARY1_ID = "Subsidiary1TestId";
+    private static final String SUBSIDIARY2_ID = "Subsidiary2TestId";
+    private static final String COMPANY1_ID = "Company1TestId";
+
     @InjectMocks
     private SubsidiaryServiceImpl service;
 
     @Mock
     private SubsidiaryRepository repository;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
+    private Subsidiary createSubsidiary(String id, String location, Date creationDate, String companyId) {
+        Subsidiary subsidiary = new Subsidiary();
+        subsidiary.setId(id);
+        subsidiary.setLocation(location);
+        subsidiary.setCreationDate(creationDate);
+        subsidiary.setCompanyId(companyId);
+        return subsidiary;
     }
 
     @Test
-    void create() {
-        when(repository.save(any(Subsidiary.class))).thenReturn(SUBSIDIARY1);
-        Subsidiary subsidiary = service.create(SUBSIDIARY1);
-        assertThat(subsidiary).isEqualTo(SUBSIDIARY1);
+    public void create() {
+        Subsidiary subsidiary1 = createSubsidiary(SUBSIDIARY1_ID, "testlocation1", new Date(1100000000000L), COMPANY1_ID);
+        when(repository.save(any(Subsidiary.class))).thenReturn(subsidiary1);
+        Subsidiary subsidiary = service.create(subsidiary1);
+        assertThat(subsidiary).isEqualTo(subsidiary1);
+        verify(repository).save(subsidiary1);
     }
 
     @Test
-    void update() {
-        when(repository.save(any(Subsidiary.class))).thenReturn(SUBSIDIARY1);
-        service.update(SUBSIDIARY1);
-        verify(repository, times(1)).save(SUBSIDIARY1);
+    public void update() {
+        Subsidiary subsidiary1 = createSubsidiary(SUBSIDIARY1_ID, "testlocation1", new Date(1100000000000L), COMPANY1_ID);
+        when(repository.save(any(Subsidiary.class))).thenReturn(subsidiary1);
+        service.update(subsidiary1);
+        verify(repository).save(subsidiary1);
     }
 
     @Test
-    void delete() {
+    public void delete() {
         doNothing().when(repository).delete(anyString());
-        service.delete(SUBSIDIARY1_ID);
-        verify(repository, times(1)).delete(SUBSIDIARY1_ID);
+        service.delete(SUBSIDIARY2_ID);
+        verify(repository).delete(SUBSIDIARY2_ID);
     }
 
     @Test
-    void get() {
-        when(repository.get(anyString())).thenReturn(SUBSIDIARY1);
+    public void get() {
+        Subsidiary subsidiary1 = createSubsidiary(SUBSIDIARY1_ID, "testlocation1", new Date(1100000000000L), COMPANY1_ID);
+        when(repository.get(anyString())).thenReturn(subsidiary1);
         Subsidiary subsidiary = service.get(SUBSIDIARY1_ID);
-        assertThat(subsidiary).isEqualTo(SUBSIDIARY1);
+        assertThat(subsidiary).isEqualTo(subsidiary1);
+        verify(repository).get(SUBSIDIARY1_ID);
     }
 
     @Test
-    void getAll() {
-        when(repository.getAll()).thenReturn(Arrays.asList(SUBSIDIARY1, SUBSIDIARY2));
+    public void getAll() {
+        Subsidiary subsidiary1 = createSubsidiary(SUBSIDIARY1_ID, "testlocation1", new Date(1100000000000L), COMPANY1_ID);
+        Subsidiary subsidiary2 = createSubsidiary(SUBSIDIARY2_ID, "testlocation2", new Date(1110000000000L), COMPANY1_ID);
+        when(repository.getAll()).thenReturn(Arrays.asList(subsidiary1, subsidiary2));
         List<Subsidiary> subsidiaries = service.getAll();
-        assertThat(subsidiaries).isEqualTo(Arrays.asList(SUBSIDIARY1, SUBSIDIARY2));
+        assertThat(subsidiaries).isEqualTo(Arrays.asList(subsidiary1, subsidiary2));
+        verify(repository).getAll();
     }
 
     @Test
-    void getByCompanyId() {
-        when(repository.getByCompanyId(COMPANY1_ID)).thenReturn(Collections.singletonList(SUBSIDIARY1));
+    public void getByCompanyId() {
+        Subsidiary subsidiary1 = createSubsidiary(SUBSIDIARY1_ID, "testlocation1", new Date(1100000000000L), COMPANY1_ID);
+        when(repository.getByCompanyId(COMPANY1_ID)).thenReturn(Collections.singletonList(subsidiary1));
         List<Subsidiary> subsidiaries = service.getByCompanyId(COMPANY1_ID);
-        assertThat(subsidiaries).isEqualTo(Collections.singletonList(SUBSIDIARY1));
+        assertThat(subsidiaries).isEqualTo(Collections.singletonList(subsidiary1));
+        verify(repository).getByCompanyId(COMPANY1_ID);
     }
 }
