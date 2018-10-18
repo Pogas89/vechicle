@@ -28,18 +28,9 @@ public class CompanyServiceImplTest {
     @Mock
     private CompanyRepository repository;
 
-    private Company createCompany(String id, String name, String description, Date date) {
-        Company company = new Company();
-        company.setId(id);
-        company.setName(name);
-        company.setDescription(description);
-        company.setCreationDate(date);
-        return company;
-    }
-
     @Test
     public void create() {
-        Company company1 = createCompany(COMPANY1_ID, "testname1", "testdescription1", new Date(1000000000000L));
+        Company company1 = createCompany(COMPANY1_ID);
         when(repository.save(any(Company.class))).thenReturn(company1);
         Company company = service.create(company1);
         assertThat(company).isEqualTo(company1);
@@ -48,7 +39,7 @@ public class CompanyServiceImplTest {
 
     @Test
     public void update() {
-        Company company1 = createCompany(COMPANY1_ID, "testname1", "testdescription1", new Date(1000000000000L));
+        Company company1 = createCompany(COMPANY1_ID);
         when(repository.save(any(Company.class))).thenReturn(company1);
         service.update(company1);
         verify(repository).save(company1);
@@ -63,7 +54,7 @@ public class CompanyServiceImplTest {
 
     @Test
     public void get() {
-        Company company1 = createCompany(COMPANY1_ID, "testname1", "testdescription1", new Date(1000000000000L));
+        Company company1 = createCompany(COMPANY1_ID);
         when(repository.get(anyString())).thenReturn(company1);
         Company company = service.get(COMPANY1_ID);
         assertThat(company).isEqualTo(company1);
@@ -72,11 +63,20 @@ public class CompanyServiceImplTest {
 
     @Test
     public void getAll() {
-        Company company1 = createCompany(COMPANY1_ID, "testname1", "testdescription1", new Date(1000000000000L));
-        Company company2 = createCompany(COMPANY2_ID, "testname2", "testdescription2", new Date(1002000000000L));
+        Company company1 = createCompany(COMPANY1_ID);
+        Company company2 = createCompany(COMPANY2_ID);
         when(repository.getAll()).thenReturn(Arrays.asList(company1, company2));
         List<Company> companies = service.getAll();
         assertThat(companies).isEqualTo(Arrays.asList(company1, company2));
         verify(repository).getAll();
+    }
+
+    private Company createCompany(String id) {
+        Company company = new Company();
+        company.setId(id);
+        company.setName("TestName");
+        company.setDescription("TestDescription");
+        company.setCreationDate(new Date());
+        return company;
     }
 }
