@@ -1,53 +1,53 @@
 package com.epam.ivanou4.vehicle.controller;
 
-import com.epam.ivanou4.vehicle.VehicleApplication;
 import com.epam.ivanou4.vehicle.model.Subsidiary;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = VehicleApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SubsidiaryRestControllerTest {
+public class SubsidiaryRestControllerTest extends AbstractRestControllerTest {
 
-    @LocalServerPort
-    private int port;
+    @Before
+    public void setUp() {
+        mongoTemplate.save(createSubsidiary("testId", "testLocation"));
+        mongoTemplate.save(createSubsidiary("testId2", "testLocation2"));
+    }
 
-    private TestRestTemplate restTemplate = new TestRestTemplate();
+    @After
+    public void after() {
+        mongoTemplate.dropCollection(Subsidiary.class);
+    }
 
     @Test
     public void getAll() {
-        HttpEntity<Subsidiary> request = new HttpEntity<>(createSubsidiary("testId", "testName"));
-        restTemplate.postForObject(createURL("/rest/subsidiary"),
-                request, Subsidiary.class);
-        request = new HttpEntity<>(createSubsidiary("testId2", "testName2"));
-        restTemplate.postForObject(createURL("/rest/subsidiary"),
-                request, Subsidiary.class);
-        List subsidiaries = restTemplate.getForObject(createURL("/rest/subsidiary"),
-                List.class);
+        ResponseEntity<List<Subsidiary>> responseEntity =
+                restTemplate.exchange(createURL("/rest/subsidiary"), HttpMethod.GET, null,
+                        new ParameterizedTypeReference<List<Subsidiary>>() {
+                        });
+        List<Subsidiary> subsidiaries = responseEntity.getBody();
         assertThat(subsidiaries.size(), is(2));
     }
 
     @Test
-    public void get() {
-        HttpEntity<Subsidiary> request = new HttpEntity<>(createSubsidiary("testId", "testLocation"));
-        restTemplate.postForObject(createURL("/rest/subsidiary"),
-                request, Subsidiary.class);
+    public void getById() {
         Subsidiary subsidiary =
-                restTemplate.getForObject(createURL("/rest/subsidiary/testId"), Subsidiary.class);
+                restTemplate.getForObject(createURL("/rest/subsidiary/{id}"), Subsidiary.class, "testId");
         assertThat(subsidiary.getId(), is("testId"));
+        assertThat(subsidiary.getLocation(), is("testLocation"));
+        assertThat(subsidiary.getCompanyId(), is("testCompanyId"));
     }
 
     @Test
@@ -57,48 +57,40 @@ public class SubsidiaryRestControllerTest {
                 request, Subsidiary.class);
         assertThat(createdSubsidiary.getId(), notNullValue());
         assertThat(createdSubsidiary.getLocation(), is("testLocation"));
+        assertThat(createdSubsidiary.getCompanyId(), is("testCompanyId"));
     }
 
     @Test
     public void update() {
-        Subsidiary subsidiary = createSubsidiary("testId", "testLocation");
+        Subsidiary subsidiary = createSubsidiary("testId", "newTestLocation");
         HttpEntity<Subsidiary> request = new HttpEntity<>(subsidiary);
-        restTemplate.postForObject(createURL("/rest/subsidiary"),
-                request, Subsidiary.class);
-        subsidiary.setLocation("newTestLocation");
-        request = new HttpEntity<>(subsidiary);
         restTemplate.put(createURL("/rest/subsidiary"), request, Subsidiary.class);
-        Subsidiary updatedsubsidiary = restTemplate.
-                getForObject(createURL("/rest/subsidiary/testId"), Subsidiary.class);
-        assertThat(updatedsubsidiary.getLocation(), is(subsidiary.getLocation()));
+        Subsidiary updatedSubsidiary = restTemplate.
+                getForObject(createURL("/rest/subsidiary/{id}"), Subsidiary.class, "testId");
+        assertThat(updatedSubsidiary.getId(), is(subsidiary.getId()));
+        assertThat(updatedSubsidiary.getLocation(), is(subsidiary.getLocation()));
+        assertThat(updatedSubsidiary.getCompanyId(), is(subsidiary.getCompanyId()));
     }
 
     @Test
     public void delete() {
-        HttpEntity<Subsidiary> request = new HttpEntity<>(createSubsidiary("testId", "testLocation"));
-        restTemplate.postForObject(createURL("/rest/subsidiary"),
-                request, Subsidiary.class);
-
-        restTemplate.delete(createURL("/rest/subsidiary/testId"));
-        if (restTemplate.getForObject(createURL("/rest/subsidiary/testId"), Subsidiary.class) != null) {
-            fail();
-        }
+        restTemplate.delete(createURL("/rest/subsidiary/{id}"), "testId");
+        Subsidiary subsidiary = restTemplate.getForObject(createURL("/rest/subsidiary/{id}"),
+                Subsidiary.class, "testId");
+        assertNull(subsidiary);
     }
 
     @Test
     public void getByCompanyId() {
-        HttpEntity<Subsidiary> request = new HttpEntity<>(createSubsidiary("testId", "testLocation"));
-        restTemplate.postForObject(createURL("/rest/subsidiary"),
-                request, Subsidiary.class);
-        List subsidiaries = restTemplate.getForObject(createURL("/rest/subsidiary/by/testCompanyId"),
-                List.class);
-        assertThat(subsidiaries.size(), is(1));
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(createURL("/rest/subsidiary"))
+                .queryParam("companyId", "testCompanyId");
+        ResponseEntity<List<Subsidiary>> responseEntity =
+                restTemplate.exchange(builder.toUriString(), HttpMethod.GET, null,
+                        new ParameterizedTypeReference<List<Subsidiary>>() {
+                        });
+        List<Subsidiary> subsidiaries = responseEntity.getBody();
+        assertThat(subsidiaries.size(), is(2));
     }
-
-    private String createURL(String uri) {
-        return "http://localhost:" + port + uri;
-    }
-
 
     private Subsidiary createSubsidiary(String id, String location) {
         Subsidiary subsidiary = new Subsidiary();

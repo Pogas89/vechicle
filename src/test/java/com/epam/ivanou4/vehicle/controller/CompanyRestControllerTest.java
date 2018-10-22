@@ -1,52 +1,52 @@
 package com.epam.ivanou4.vehicle.controller;
 
-import com.epam.ivanou4.vehicle.VehicleApplication;
 import com.epam.ivanou4.vehicle.model.Company;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = VehicleApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CompanyRestControllerTest {
-    @LocalServerPort
-    private int port;
+public class CompanyRestControllerTest extends AbstractRestControllerTest {
 
-    private TestRestTemplate restTemplate = new TestRestTemplate();
+    @Before
+    public void setUp() {
+        mongoTemplate.save(createCompany("testId", "testName"));
+        mongoTemplate.save(createCompany("testId2", "testName2"));
+    }
+
+    @After
+    public void after() {
+        mongoTemplate.dropCollection(Company.class);
+    }
 
     @Test
     public void getAll() {
-        HttpEntity<Company> request = new HttpEntity<>(createCompany("testId", "testName"));
-        restTemplate.postForObject(createURL("/rest/company"),
-                request, Company.class);
-        request = new HttpEntity<>(createCompany("testId2", "testName2"));
-        restTemplate.postForObject(createURL("/rest/company"),
-                request, Company.class);
-        List companies = restTemplate.getForObject(createURL("/rest/company"),
-                List.class);
+        ResponseEntity<List<Company>> responseEntity =
+                restTemplate.exchange(createURL("/rest/company"), HttpMethod.GET, null,
+                        new ParameterizedTypeReference<List<Company>>() {
+                        });
+        List<Company> companies = responseEntity.getBody();
         assertThat(companies.size(), is(2));
     }
 
     @Test
-    public void get() {
-        HttpEntity<Company> request = new HttpEntity<>(createCompany("testId", "testName"));
-        restTemplate.postForObject(createURL("/rest/company"),
-                request, Company.class);
+    public void getById() {
         Company company =
-                restTemplate.getForObject(createURL("/rest/company/testId"), Company.class);
+                restTemplate.getForObject(createURL("/rest/company/{id}"), Company.class, "testId");
         assertThat(company.getId(), is("testId"));
+        assertThat(company.getDescription(), is("testDescription"));
+        assertThat(company.getName(), is("testName"));
     }
 
     @Test
@@ -61,31 +61,23 @@ public class CompanyRestControllerTest {
 
     @Test
     public void update() {
-        Company company = createCompany("testId", "testName");
+        Company company = createCompany("testId", "newTestName");
         HttpEntity<Company> request = new HttpEntity<>(company);
-        restTemplate.postForObject(createURL("/rest/company"),
-                request, Company.class);
-        company.setName("newTestName");
-        request = new HttpEntity<>(company);
         restTemplate.put(createURL("/rest/company"), request, Company.class);
-        Company updatedCompany = restTemplate.getForObject(createURL("/rest/company/testId"), Company.class);
+        Company updatedCompany = restTemplate.getForObject(createURL("/rest/company/{id}"),
+                Company.class, "testId");
+        assertThat(updatedCompany.getId(), is(company.getId()));
         assertThat(updatedCompany.getName(), is(company.getName()));
+        assertThat(updatedCompany.getDescription(), is(company.getDescription()));
+        assertThat(updatedCompany.getCreationDate(), is(company.getCreationDate()));
     }
 
     @Test
     public void delete() {
-        HttpEntity<Company> request = new HttpEntity<>(createCompany("testId", "testName"));
-        restTemplate.postForObject(createURL("/rest/company"),
-                request, Company.class);
-
-        restTemplate.delete(createURL("/rest/company/testId"));
-        if (restTemplate.getForObject(createURL("/rest/company/testId"), Company.class) != null) {
-            fail();
-        }
-    }
-
-    private String createURL(String uri) {
-        return "http://localhost:" + port + uri;
+        restTemplate.delete(createURL("/rest/company/{id}"), "testId");
+        Company company = restTemplate.getForObject(createURL("/rest/company/{id}"),
+                Company.class, "testId");
+        assertNull(company);
     }
 
     private Company createCompany(String id, String name) {
