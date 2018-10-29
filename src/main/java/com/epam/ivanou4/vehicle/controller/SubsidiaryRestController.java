@@ -50,8 +50,8 @@ public class SubsidiaryRestController {
         service.delete(id);
     }
 
-    @GetMapping(value = "/by", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Subsidiary> getByMail(@RequestParam("model") String companyId) {
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = "companyId")
+    public List<Subsidiary> getByCompanyId(@RequestParam("companyId") String companyId) {
         return service.getByCompanyId(companyId);
     }
 }
