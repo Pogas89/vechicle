@@ -1,0 +1,4 @@
+dependencies {
+    implementation("com.github.fge:json-schema-validator:${property('json.schema.validator.version')}")
+    testImplementation "junit:junit:${property('junit.version')}"
+}
