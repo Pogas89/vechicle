@@ -2,14 +2,18 @@ package com.epam.ivanou4.vehicle.service;
 
 import com.epam.ivanou4.vehicle.model.Company;
 import com.epam.ivanou4.vehicle.repository.CompanyRepository;
+import com.epam.ivanou4.vehicle.to.CompanyDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.dozer.DozerBeanMapper;
+import org.dozer.Mapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +27,8 @@ import static org.mockito.Mockito.*;
 public class CompanyServiceImplTest {
     private static final String COMPANY1_ID = "Company1TestId";
     private static final String COMPANY2_ID = "Company2TestId";
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private Mapper dozerMapper = new DozerBeanMapper();
 
     @InjectMocks
     private CompanyServiceImpl service;
@@ -33,19 +38,19 @@ public class CompanyServiceImplTest {
 
     @Test
     public void create() throws JsonProcessingException {
-        Company company1 = createCompany(COMPANY1_ID);
-        when(repository.save(any(Company.class))).thenReturn(company1);
-        Company company = service.create(mapper.writeValueAsString(company1));
-        assertThat(company).isEqualTo(company1);
-        verify(repository).save(company1);
+        Company createdCompany = createCompany(COMPANY1_ID);
+        when(repository.save(any(Company.class))).thenReturn(createdCompany);
+        CompanyDTO companyDTO = service.create(objectMapper.writeValueAsString(createdCompany));
+        assertThat(dozerMapper.map(companyDTO, Company.class)).isEqualTo(createdCompany);
+        verify(repository).save(createdCompany);
     }
 
     @Test
     public void update() throws JsonProcessingException {
-        Company company1 = createCompany(COMPANY1_ID);
-        when(repository.save(any(Company.class))).thenReturn(company1);
-        service.update(mapper.writeValueAsString(company1));
-        verify(repository).save(company1);
+        Company createdCompany = createCompany(COMPANY1_ID);
+        when(repository.save(any(Company.class))).thenReturn(createdCompany);
+        service.update(objectMapper.writeValueAsString(createdCompany));
+        verify(repository).save(createdCompany);
     }
 
     @Test
@@ -57,20 +62,24 @@ public class CompanyServiceImplTest {
 
     @Test
     public void get() {
-        Company company1 = createCompany(COMPANY1_ID);
-        when(repository.get(anyString())).thenReturn(company1);
-        Company company = service.get(COMPANY1_ID);
-        assertThat(company).isEqualTo(company1);
+        Company createdCompany = createCompany(COMPANY1_ID);
+        when(repository.get(anyString())).thenReturn(createdCompany);
+        CompanyDTO companyDTO = service.get(COMPANY1_ID);
+        assertThat(dozerMapper.map(companyDTO, Company.class)).isEqualTo(createdCompany);
         verify(repository).get(COMPANY1_ID);
     }
 
     @Test
     public void getAll() {
-        Company company1 = createCompany(COMPANY1_ID);
-        Company company2 = createCompany(COMPANY2_ID);
-        when(repository.getAll()).thenReturn(Arrays.asList(company1, company2));
-        List<Company> companies = service.getAll();
-        assertThat(companies).isEqualTo(Arrays.asList(company1, company2));
+        Company firstCreatedCompany = createCompany(COMPANY1_ID);
+        Company secondCreatedCompany = createCompany(COMPANY2_ID);
+        when(repository.getAll()).thenReturn(Arrays.asList(firstCreatedCompany, secondCreatedCompany));
+        List<CompanyDTO> companyDTOs = service.getAll();
+        List<Company> companies = new ArrayList<>();
+        for (CompanyDTO companyDTO : companyDTOs) {
+            companies.add(dozerMapper.map(companyDTO, Company.class));
+        }
+        assertThat(companies).isEqualTo(Arrays.asList(firstCreatedCompany, secondCreatedCompany));
         verify(repository).getAll();
     }
 

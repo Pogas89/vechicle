@@ -1,6 +1,7 @@
 package com.epam.ivanou4.vehicle.controller;
 
 import com.epam.ivanou4.vehicle.model.Subsidiary;
+import com.epam.ivanou4.vehicle.to.SubsidiaryDTO;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,21 +34,21 @@ public class SubsidiaryRestControllerTest extends AbstractRestControllerTest {
 
     @Test
     public void getAll() {
-        ResponseEntity<List<Subsidiary>> responseEntity =
+        ResponseEntity<List<SubsidiaryDTO>> responseEntity =
                 restTemplate.exchange(createURL("/rest/subsidiary"), HttpMethod.GET, null,
-                        new ParameterizedTypeReference<List<Subsidiary>>() {
+                        new ParameterizedTypeReference<List<SubsidiaryDTO>>() {
                         });
-        List<Subsidiary> subsidiaries = responseEntity.getBody();
-        assertThat(subsidiaries.size(), is(2));
+        List<SubsidiaryDTO> subsidiaryDTOS = responseEntity.getBody();
+        assertThat(subsidiaryDTOS.size(), is(2));
     }
 
     @Test
     public void getById() {
-        Subsidiary subsidiary =
-                restTemplate.getForObject(createURL("/rest/subsidiary/{id}"), Subsidiary.class, "testId");
-        assertThat(subsidiary.getId(), is("testId"));
-        assertThat(subsidiary.getLocation(), is("testLocation"));
-        assertThat(subsidiary.getCompanyId(), is("testCompanyId"));
+        SubsidiaryDTO subsidiaryDTO =
+                restTemplate.getForObject(createURL("/rest/subsidiary/{id}"), SubsidiaryDTO.class, "testId");
+        assertThat(subsidiaryDTO.getId(), is("testId"));
+        assertThat(subsidiaryDTO.getLocation(), is("testLocation"));
+        assertThat(subsidiaryDTO.getCompanyId(), is("testCompanyId"));
     }
 
     @Test
@@ -62,34 +63,34 @@ public class SubsidiaryRestControllerTest extends AbstractRestControllerTest {
 
     @Test
     public void update() {
-        Subsidiary subsidiary = createSubsidiary("testId", "newTestLocation");
-        HttpEntity<Subsidiary> request = new HttpEntity<>(subsidiary);
-        restTemplate.put(createURL("/rest/subsidiary"), request, Subsidiary.class);
-        Subsidiary updatedSubsidiary = restTemplate.
-                getForObject(createURL("/rest/subsidiary/{id}"), Subsidiary.class, "testId");
-        assertThat(updatedSubsidiary.getId(), is(subsidiary.getId()));
-        assertThat(updatedSubsidiary.getLocation(), is(subsidiary.getLocation()));
-        assertThat(updatedSubsidiary.getCompanyId(), is(subsidiary.getCompanyId()));
+        SubsidiaryDTO subsidiaryDTO = convertToSubsidiaryDTO(createSubsidiary("testId", "newTestLocation"));
+        HttpEntity<SubsidiaryDTO> request = new HttpEntity<>(subsidiaryDTO);
+        restTemplate.put(createURL("/rest/subsidiary"), request, SubsidiaryDTO.class);
+        SubsidiaryDTO updatedSubsidiary = restTemplate.
+                getForObject(createURL("/rest/subsidiary/{id}"), SubsidiaryDTO.class, "testId");
+        assertThat(updatedSubsidiary.getId(), is(subsidiaryDTO.getId()));
+        assertThat(updatedSubsidiary.getLocation(), is(subsidiaryDTO.getLocation()));
+        assertThat(updatedSubsidiary.getCompanyId(), is(subsidiaryDTO.getCompanyId()));
     }
 
     @Test
     public void delete() {
         restTemplate.delete(createURL("/rest/subsidiary/{id}"), "testId");
-        Subsidiary subsidiary = restTemplate.getForObject(createURL("/rest/subsidiary/{id}"),
-                Subsidiary.class, "testId");
-        assertNull(subsidiary);
+        SubsidiaryDTO subsidiaryDTO = restTemplate.getForObject(createURL("/rest/subsidiary/{id}"),
+                SubsidiaryDTO.class, "testId");
+        assertNull(subsidiaryDTO);
     }
 
     @Test
     public void getByCompanyId() {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(createURL("/rest/subsidiary"))
                 .queryParam("companyId", "testCompanyId");
-        ResponseEntity<List<Subsidiary>> responseEntity =
+        ResponseEntity<List<SubsidiaryDTO>> responseEntity =
                 restTemplate.exchange(builder.toUriString(), HttpMethod.GET, null,
-                        new ParameterizedTypeReference<List<Subsidiary>>() {
+                        new ParameterizedTypeReference<List<SubsidiaryDTO>>() {
                         });
-        List<Subsidiary> subsidiaries = responseEntity.getBody();
-        assertThat(subsidiaries.size(), is(2));
+        List<SubsidiaryDTO> subsidiaryDTOS = responseEntity.getBody();
+        assertThat(subsidiaryDTOS.size(), is(2));
     }
 
     private Subsidiary createSubsidiary(String id, String location) {
@@ -99,5 +100,9 @@ public class SubsidiaryRestControllerTest extends AbstractRestControllerTest {
         subsidiary.setCreationDate(new Date());
         subsidiary.setCompanyId("testCompanyId");
         return subsidiary;
+    }
+
+    private SubsidiaryDTO convertToSubsidiaryDTO(Subsidiary subsidiary) {
+        return dozerBeanMapper.map(subsidiary,SubsidiaryDTO.class);
     }
 }

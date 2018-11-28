@@ -4,25 +4,31 @@ import com.epam.ivanou4.vechicle.validation.Validation;
 import com.epam.ivanou4.vehicle.exception.ValidateException;
 import com.epam.ivanou4.vehicle.model.Subsidiary;
 import com.epam.ivanou4.vehicle.repository.SubsidiaryRepository;
+import com.epam.ivanou4.vehicle.to.SubsidiaryDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.dozer.DozerBeanMapper;
+import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class SubsidiaryServiceImpl implements SubsidiaryService {
-    public static final String SUBSIDIARY_SCHEMA = "subsidiary_shema.json";
+    private static final String SUBSIDIARY_SCHEMA = "subsidiary_shema.json";
 
     @Autowired
     private SubsidiaryRepository repository;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    private Mapper dozerMapper = new DozerBeanMapper();
 
     @Override
-    public Subsidiary create(String subsidiaryJson) {
-        return repository.save(validateSubsidiary(subsidiaryJson));
+    public SubsidiaryDTO create(String subsidiaryJson) {
+        return dozerMapper.map(repository.save(validateSubsidiary(subsidiaryJson)), SubsidiaryDTO.class);
     }
 
     @Override
@@ -36,25 +42,32 @@ public class SubsidiaryServiceImpl implements SubsidiaryService {
     }
 
     @Override
-    public Subsidiary get(String id) {
-        return repository.get(id);
+    public SubsidiaryDTO get(String id) {
+        Subsidiary subsidiary = repository.get(id);
+        if (subsidiary != null) {
+            return dozerMapper.map(subsidiary, SubsidiaryDTO.class);
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public List<Subsidiary> getAll() {
-        return repository.getAll();
+    public List<SubsidiaryDTO> getAll() {
+        List<Subsidiary> subsidiaries = repository.getAll();
+        return convertToDTO(subsidiaries);
     }
 
     @Override
-    public List<Subsidiary> getByCompanyId(String id) {
-        return repository.getByCompanyId(id);
+    public List<SubsidiaryDTO> getByCompanyId(String id) {
+        List<Subsidiary> subsidiaries = repository.getByCompanyId(id);
+        return convertToDTO(subsidiaries);
     }
 
     private Subsidiary validateSubsidiary(String json) {
         Subsidiary subsidiary;
         if (new Validation().validate(json, SUBSIDIARY_SCHEMA)) {
             try {
-                subsidiary = mapper.readValue(json, Subsidiary.class);
+                subsidiary = objectMapper.readValue(json, Subsidiary.class);
                 return subsidiary;
             } catch (IOException e) {
                 throw new ValidateException("Bad or incomplete data");
@@ -62,5 +75,13 @@ public class SubsidiaryServiceImpl implements SubsidiaryService {
         } else {
             throw new ValidateException("Bad or incomplete data");
         }
+    }
+
+    private List<SubsidiaryDTO> convertToDTO(List<Subsidiary> subsidiaries) {
+        List<SubsidiaryDTO> subsidiaryDTOS = new ArrayList<>();
+        for (Subsidiary subsidiary : subsidiaries) {
+            subsidiaryDTOS.add(dozerMapper.map(subsidiary, SubsidiaryDTO.class));
+        }
+        return subsidiaryDTOS;
     }
 }

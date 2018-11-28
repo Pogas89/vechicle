@@ -1,6 +1,8 @@
 package com.epam.ivanou4.vehicle.controller;
 
 import com.epam.ivanou4.vehicle.VehicleApplication;
+import org.dozer.DozerBeanMapper;
+import org.dozer.Mapper;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +22,9 @@ public abstract class AbstractRestControllerTest {
 
     protected TestRestTemplate restTemplate = new TestRestTemplate();
 
+    protected Mapper dozerBeanMapper = new DozerBeanMapper();
+
     public String createURL(String uri) {
         return "http://localhost:" + port + uri;
     }
-
 }

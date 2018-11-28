@@ -1,7 +1,7 @@
 package com.epam.ivanou4.vehicle.controller;
 
-import com.epam.ivanou4.vehicle.model.Subsidiary;
 import com.epam.ivanou4.vehicle.service.SubsidiaryService;
+import com.epam.ivanou4.vehicle.to.SubsidiaryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,28 +16,28 @@ import static com.epam.ivanou4.vehicle.controller.SubsidiaryRestController.REST_
 @RestController
 @RequestMapping(REST_URL)
 public class SubsidiaryRestController {
-    public static final String REST_URL = "/rest/subsidiary";
+    static final String REST_URL = "/rest/subsidiary";
 
     @Autowired
     private SubsidiaryService service;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Subsidiary> getAll() {
+    public List<SubsidiaryDTO> getAll() {
         return service.getAll();
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Subsidiary get(@PathVariable("id") String id) {
+    public SubsidiaryDTO get(@PathVariable("id") String id) {
         return service.get(id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Subsidiary> createWithLocation(@RequestBody String subsidiaryJson) {
-        Subsidiary createdSubsidiary = service.create(subsidiaryJson);
+    public ResponseEntity<SubsidiaryDTO> createWithLocation(@RequestBody String subsidiaryJson) {
+        SubsidiaryDTO createdSubsidiaryDTO = service.create(subsidiaryJson);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
-                .buildAndExpand(createdSubsidiary.getId()).toUri();
-        return ResponseEntity.created(uriOfNewResource).body(createdSubsidiary);
+                .buildAndExpand(createdSubsidiaryDTO.getId()).toUri();
+        return ResponseEntity.created(uriOfNewResource).body(createdSubsidiaryDTO);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -51,7 +51,7 @@ public class SubsidiaryRestController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = "companyId")
-    public List<Subsidiary> getByCompanyId(@RequestParam("companyId") String companyId) {
+    public List<SubsidiaryDTO> getByCompanyId(@RequestParam("companyId") String companyId) {
         return service.getByCompanyId(companyId);
     }
 }

@@ -1,6 +1,7 @@
 package com.epam.ivanou4.vehicle.controller;
 
 import com.epam.ivanou4.vehicle.model.Company;
+import com.epam.ivanou4.vehicle.to.CompanyDTO;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,52 +33,52 @@ public class CompanyRestControllerTest extends AbstractRestControllerTest {
 
     @Test
     public void getAll() {
-        ResponseEntity<List<Company>> responseEntity =
+        ResponseEntity<List<CompanyDTO>> responseEntity =
                 restTemplate.exchange(createURL("/rest/company"), HttpMethod.GET, null,
-                        new ParameterizedTypeReference<List<Company>>() {
+                        new ParameterizedTypeReference<List<CompanyDTO>>() {
                         });
-        List<Company> companies = responseEntity.getBody();
-        assertThat(companies.size(), is(2));
+        List<CompanyDTO> companyDTOS = responseEntity.getBody();
+        assertThat(companyDTOS.size(), is(2));
     }
 
     @Test
     public void getById() {
-        Company company =
-                restTemplate.getForObject(createURL("/rest/company/{id}"), Company.class, "testId");
-        assertThat(company.getId(), is("testId"));
-        assertThat(company.getDescription(), is("testDescription"));
-        assertThat(company.getName(), is("testName"));
+        CompanyDTO companyDTO =
+                restTemplate.getForObject(createURL("/rest/company/{id}"), CompanyDTO.class, "testId");
+        assertThat(companyDTO.getId(), is("testId"));
+        assertThat(companyDTO.getDescription(), is("testDescription"));
+        assertThat(companyDTO.getName(), is("testName"));
     }
 
     @Test
     public void create() {
-        HttpEntity<Company> request = new HttpEntity<>(createCompany(null, "testName"));
-        Company createdCompany = restTemplate.postForObject(createURL("/rest/company"),
-                request, Company.class);
-        assertThat(createdCompany.getId(), notNullValue());
-        assertThat(createdCompany.getName(), is("testName"));
-        assertThat(createdCompany.getDescription(), is("testDescription"));
+        HttpEntity<CompanyDTO> request = new HttpEntity<>(convertToCompanyDTO(createCompany(null, "testName")));
+        CompanyDTO createdCompanyDTO = restTemplate.postForObject(createURL("/rest/company"),
+                request, CompanyDTO.class);
+        assertThat(createdCompanyDTO.getId(), notNullValue());
+        assertThat(createdCompanyDTO.getName(), is("testName"));
+        assertThat(createdCompanyDTO.getDescription(), is("testDescription"));
     }
 
     @Test
     public void update() {
-        Company company = createCompany("testId", "newTestName");
-        HttpEntity<Company> request = new HttpEntity<>(company);
-        restTemplate.put(createURL("/rest/company"), request, Company.class);
-        Company updatedCompany = restTemplate.getForObject(createURL("/rest/company/{id}"),
-                Company.class, "testId");
-        assertThat(updatedCompany.getId(), is(company.getId()));
-        assertThat(updatedCompany.getName(), is(company.getName()));
-        assertThat(updatedCompany.getDescription(), is(company.getDescription()));
-        assertThat(updatedCompany.getCreationDate(), is(company.getCreationDate()));
+        CompanyDTO companyDTO = convertToCompanyDTO(createCompany("testId", "newTestName"));
+        HttpEntity<CompanyDTO> request = new HttpEntity<>(companyDTO);
+        restTemplate.put(createURL("/rest/company"), request, CompanyDTO.class);
+        CompanyDTO updatedCompany = restTemplate.getForObject(createURL("/rest/company/{id}"),
+                CompanyDTO.class, "testId");
+        assertThat(updatedCompany.getId(), is(companyDTO.getId()));
+        assertThat(updatedCompany.getName(), is(companyDTO.getName()));
+        assertThat(updatedCompany.getDescription(), is(companyDTO.getDescription()));
+        assertThat(updatedCompany.getCreationDate(), is(companyDTO.getCreationDate()));
     }
 
     @Test
     public void delete() {
         restTemplate.delete(createURL("/rest/company/{id}"), "testId");
-        Company company = restTemplate.getForObject(createURL("/rest/company/{id}"),
-                Company.class, "testId");
-        assertNull(company);
+        CompanyDTO companyDTO = restTemplate.getForObject(createURL("/rest/company/{id}"),
+                CompanyDTO.class, "testId");
+        assertNull(companyDTO);
     }
 
     private Company createCompany(String id, String name) {
@@ -87,5 +88,9 @@ public class CompanyRestControllerTest extends AbstractRestControllerTest {
         company.setDescription("testDescription");
         company.setCreationDate(new Date());
         return company;
+    }
+
+    private CompanyDTO convertToCompanyDTO(Company company) {
+        return dozerBeanMapper.map(company, CompanyDTO.class);
     }
 }
