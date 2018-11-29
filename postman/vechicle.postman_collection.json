@@ -1,0 +1,251 @@
+{
+	"info": {
+		"_postman_id": "5acb97b1-2bd9-4459-b892-b196e6e87575",
+		"name": "vechicle",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8080/rest/company",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"testName\",\r\n  \"description\": \"description1\",\r\n  \"creationDate\": \"2018-10-02T20:44:41.233+0000\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/company",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"company"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/rest/subsidiary",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"companyId\": \"5bff8ea66b06c4190cf0a666\",\r\n  \"location\": \"newTestLocation\",\r\n  \"creationDate\": \"2018-10-21T18:17:12.718+0000\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/subsidiary",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"subsidiary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/rest/company",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": \"5bff8ea66b06c4190cf0a666\",\r\n  \"name\": \"newTestName\",\r\n  \"description\": \"description\",\r\n  \"creationDate\": \"2018-10-02T20:44:41.233+0000\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/company",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"company"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/rest/subsidiary",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\n        \"id\": \"5bff8ee16b06c4190cf0a667\",\n        \"companyId\": \"5bff8ea66b06c4190cf0a666\",\n        \"location\": \"BY\",\n        \"creationDate\": \"2018-10-21T18:17:12.718+0000\"\n    }"
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/subsidiary",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"subsidiary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/rest/subsidiary",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/subsidiary",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"subsidiary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/rest/company",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/subsidiary",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"subsidiary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/rest/subsidiary/5bff8ee16b06c4190cf0a667",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\n        \"id\": \"5bff8ee16b06c4190cf0a667\",\n        \"companyId\": \"5bff8ea66b06c4190cf0a666\",\n        \"location\": \"BY\",\n        \"creationDate\": \"2018-10-21T18:17:12.718+0000\"\n    }"
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/subsidiary/5bff8ee16b06c4190cf0a667",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"subsidiary",
+						"5bff8ee16b06c4190cf0a667"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/rest/company/5bff8ea66b06c4190cf0a666",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\n        \"id\": \"5bff8ee16b06c4190cf0a667\",\n        \"companyId\": \"5bff8ea66b06c4190cf0a666\",\n        \"location\": \"BY\",\n        \"creationDate\": \"2018-10-21T18:17:12.718+0000\"\n    }"
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/company/5bff8ea66b06c4190cf0a666",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"company",
+						"5bff8ea66b06c4190cf0a666"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
